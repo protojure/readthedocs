@@ -1,0 +1,26 @@
+#
+# Copyright Protojure Project All Rights Reserved
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+site_name: Protojure
+site_url: http://protojure.readthedocs.io
+theme: readthedocs
+repo_url: https://github.com/protojure/readthedocs.git
+site_description: 'Welcome to the Protojure documentation'
+strict: true
+
+pages:
+- Introduction: README.md
+
+markdown_extensions:
+  - toc:
+     permalink: true
+  - admonition
+  - extra
+  - tables
+  - toc
+  - fenced_code
+  - smarty
+  - footnotes
