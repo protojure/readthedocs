@@ -11,7 +11,7 @@ repo_url: https://github.com/protojure/readthedocs.git
 site_description: 'Welcome to the Protojure documentation'
 strict: true
 
-pages:
+nav:
 - Introduction: index.md
 
 markdown_extensions:
