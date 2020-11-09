@@ -302,7 +302,6 @@ index 51c63f0..b480bec 100644
              [com.example.addressbook.Greeter.server :as greeter]
 -            [com.example.addressbook :as addressbook]))
 +            [com.example.addressbook :as addressbook]
-+            [com.example.addressbook :as addressbook]
 +            [io.pedestal.log :as log]))
 
  (defn about-page
@@ -391,7 +390,6 @@ service Greeter {
 ```
 * Server Handler
 
-{% raw %}
 ```
 (deftype Greeter []
   greeter/Service
@@ -400,7 +398,6 @@ service Greeter {
     {:status 200
      :body {:message (str "Hello, " name)}}))
 ```
-{% endraw %}
 
 Include the below in the interceptors passed to
 the pedestal routes key:
@@ -423,7 +420,7 @@ Simply return a [core.async](https://github.com/clojure/core.async)
 instead of a map as above in the unary example
 
 * Server
-{% raw %}
+
 ```
 (deftype Greeter []
   greeter/Service
@@ -437,8 +434,6 @@ instead of a map as above in the unary example
       {:status 200
        :body resp-chan})))
 ```
-{% endraw %}
-
 
 ##### Client Streaming Example
 Identical to the above Client example for unary -- instead of closing the channels after pushing a single map,
