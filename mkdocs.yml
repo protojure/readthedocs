@@ -13,7 +13,7 @@ strict: true
 
 nav:
 - Introduction: index.md
-- Quick Start: quickstart.md
+- Getting Started: getting-started.md
 
 markdown_extensions:
   - toc:
