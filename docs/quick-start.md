@@ -2,7 +2,7 @@
 
 ### Prerequisites
 
-In addition to the requirements listed above, you will also need:
+In addition to the installation requirements, you will also need:
 
 * [Leiningen](https://leiningen.org/)
 

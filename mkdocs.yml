@@ -12,8 +12,10 @@ site_description: 'Welcome to the Protojure documentation'
 strict: true
 
 nav:
-- Introduction: index.md
-- Getting Started: getting-started.md
+- Introduction: intro.md
+- Intallation: install.md
+- Quick Start: quick-start.md
+- Contribuing: contributing.md
 
 markdown_extensions:
   - toc:
