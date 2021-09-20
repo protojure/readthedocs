@@ -489,7 +489,7 @@ Maybe the server needs to return an error to the client for any reason. This can
 
 ```
 
-The error path (when "name" is not valid) will throw a `java.util.concurrent.ExecutionException` exception, that needs to be handled properly in the client side, while trying to [defer] (https://clojuredocs.org/clojure.core/deref) the promise that was returned on the request:
+The error path (when "name" is not valid) will throw a `java.util.concurrent.ExecutionException` exception, that needs to be handled properly in the client side, while trying to [deref] (https://clojuredocs.org/clojure.core/deref) the promise that was returned on the request:
 
 
 ```
