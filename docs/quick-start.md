@@ -419,9 +419,9 @@ When a client sends a request to the server, two [channels](https://clojuredocs.
 
 * `:grpc-out` channel 
 
-Is the streaming channel, used to send all the messages. When the server is done with the streaming, simply 
-close! the channel and return it in the :body key of your interceptor handler, instead of a map as above in the unary example
+Is the streaming channel, used to send all the messages. The handler first acknowledges streaming will start by returning the same grpc-out channel as the :body of the response map (instead of a map as above in the unary example).
 
+When the server is done with the streaming, simply close! the channel: 
 
 ```
 (deftype Greeter []
