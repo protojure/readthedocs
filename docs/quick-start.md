@@ -415,11 +415,13 @@ You can find an additional unary client and server example (a runnable one) in t
 
 ##### Server Streaming Example
 
-Simply return a [core.async](https://github.com/clojure/core.async)
-[channel](https://clojuredocs.org/clojure.core.async/chan) in the :body key returned by your interceptor handler
-instead of a map as above in the unary example
+When a client sends a request to the server, two [channels](https://clojuredocs.org/clojure.core.async/chan) are provided in the request: `:grpc-out` and `close-ch`.
 
-* Server
+* `:grpc-out` channel 
+
+Is the streaming channel, used to send all the messages. The handler first acknowledges streaming will start by returning the same grpc-out channel as the :body of the response map (instead of a map as above in the unary example).
+
+When the server is done with the streaming, simply close! the channel: 
 
 ```
 (deftype Greeter []
@@ -434,6 +436,70 @@ instead of a map as above in the unary example
       {:status 200
        :body resp-chan})))
 ```
+
+* `close-ch` channel
+
+Sometimes the client disconnects before expected. The server gets notified of such events via this channel. When this happens, server needs to handle it accordingly:
+
+``` 
+(defn handle-client-disconnect [close-chan]
+  (async/take! close-chan
+               (fn [signal]
+                 (log/info "do stuff to handle client disconnection"))))
+
+(deftype Greeter []
+  greeter/Service
+  (SayRepeatHello
+    [this {{:keys [name]} :grpc-params :as request}]
+    (let [close-chan (:close-ch request)
+          resp-chan (:grpc-out request)]
+      (handle-client-disconnect close-chan)
+      (go
+        (dotimes [_ 3]
+          (>! resp-chan {:message (str "Hello, " name)}))
+        (async/close! resp-chan))
+      {:status 200
+       :body resp-chan})))
+
+```
+
+* Error handling
+
+Maybe the server needs to return an error to the client for any reason. This can be accomplished by using the [grpc-statuses] (https://github.com/protojure/lib/blob/master/src/protojure/grpc/status.clj):
+
+
+```
+(defn valid? [name]
+  ;do validation
+  )
+
+(deftype Greeter []
+  greeter/Service
+  (SayRepeatHello
+    [this {{:keys [name]} :grpc-params :as request}]
+    (let [resp-chan (:grpc-out request)]
+      (when-not (valid? name)
+        (grpc.status/error :invalid-argument "Invalid parameter."))
+      (go
+        (dotimes [_ 3]
+          (>! resp-chan {:message (str "Hello, " name)}))
+        (async/close! resp-chan))
+      {:status 200
+       :body resp-chan})))
+
+```
+
+The error path (when "name" is not valid) will throw a `java.util.concurrent.ExecutionException` exception, that needs to be handled properly in the client side, while trying to [deref] (https://clojuredocs.org/clojure.core/deref) the promise that was returned on the request:
+
+
+```
+
+(try
+  @(greeter/SayRepeatHello client {:name "Invalid name"} (async/chan 1)
+  (catch Exception e
+    (log/warn (format "promise compĺeted with error: %s" (:message (ex-data (.getCause e)))))))
+```
+
 
 ##### Client Streaming Example
 Identical to the above Client example for unary -- instead of closing the channels after pushing a single map,
