@@ -79,14 +79,13 @@ We can create a `project.clj` file alongside our `.proto` file:
   :url "http://example.com/FIXME"
   :license {:name "Apache License 2.0"
             :url "https://www.apache.org/licenses/LICENSE-2.0"
-            :year 2019
+            :year 2022
             :key "apache-2.0"}
-  :dependencies [[org.clojure/clojure "1.10.1"]
+  :dependencies [[org.clojure/clojure "1.10.3"]
 
                  ;; -- PROTOC-GEN-CLOJURE --
-                 [protojure "1.5.11"]
-                 [protojure/google.protobuf "0.9.1"]
-                 [com.google.protobuf/protobuf-java "3.13.0"]])
+                 [io.github.protojure/core "2.0.1"]
+                 [io.github.protojure/google.protobuf "2.0.0"]])
 
 ```
 
@@ -220,19 +219,13 @@ Next, create another file called `project.clj` in our current directory with con
   :url "http://example.com/FIXME"
   :license {:name "Apache License 2.0"
             :url "https://www.apache.org/licenses/LICENSE-2.0"
-            :year 2019
+            :year 2022
             :key "apache-2.0"}
-  :dependencies [[org.clojure/clojure "1.10.1"]
+  :dependencies [[org.clojure/clojure "1.10.3"]
 
                  ;; -- PROTOC-GEN-CLOJURE --
-                 [protojure "1.5.11"]
-                 [protojure/google.protobuf "0.9.1"]
-                 [com.google.protobuf/protobuf-java "3.13.0"]
-                 ;; -- PROTOC-GEN-CLOJURE HTTP/2 Client Lib Dependencies --
-                 [org.eclipse.jetty.http2/http2-client "9.4.20.v20190813"]
-                 [org.eclipse.jetty/jetty-alpn-java-client "9.4.28.v20200408"]
-                 ;; -- Jetty Client Dep --
-                 [org.ow2.asm/asm "8.0.1"]]
+                 [io.github.protojure/grpc-client "2.0.1"]
+                 [io.github.protojure/google.protobuf "2.0.0"]]
   :source-paths ["."])
 
 ```
@@ -417,11 +410,11 @@ You can find an additional unary client and server example (a runnable one) in t
 
 When a client sends a request to the server, two [channels](https://clojuredocs.org/clojure.core.async/chan) are provided in the request: `:grpc-out` and `close-ch`.
 
-* `:grpc-out` channel 
+* `:grpc-out` channel
 
 Is the streaming channel, used to send all the messages. The handler first acknowledges streaming will start by returning the same grpc-out channel as the :body of the response map (instead of a map as above in the unary example).
 
-When the server is done with the streaming, simply close! the channel: 
+When the server is done with the streaming, simply close! the channel:
 
 ```
 (deftype Greeter []
@@ -441,7 +434,7 @@ When the server is done with the streaming, simply close! the channel:
 
 Sometimes the client disconnects before expected. The server gets notified of such events via this channel. When this happens, server needs to handle it accordingly:
 
-``` 
+```
 (defn handle-client-disconnect [close-chan]
   (async/take! close-chan
                (fn [signal]
