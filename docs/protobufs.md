@@ -1,4 +1,8 @@
-### Protocol Buffers
+# Introduction
+
+From [https://developers.google.com/protocol-buffers/](https://developers.google.com/protocol-buffers/)
+
+> Protocol buffers are Google's language-neutral, platform-neutral, extensible mechanism for serializing structured data
 
 Below is a simple [`.proto`](https://developers.google.com/protocol-buffers/) Protocol Buffer (protobuf or pb) definition:
 
@@ -31,8 +35,14 @@ message AddressBook {
 
 ```
 
+Most of the protobuf ecosystem works by compiling the languauge neutral .proto definition into some language specific bindings, and
+protojure is no different.  In the case of Protojure, 'Language specific' translates to Clojure maps and records.  As such, you will
+find a map-oriented approach to working with protocol buffers with Protojure.
+
+# Getting Started
+
 Given the above contents in a file, `addressbook.proto`, in our current directory, we may use the protojure
-[protoc plugin](https://github.com/protojure/protoc-plugin) to generate .clj language bindings:
+[protoc plugin](https://github.com/protojure/protoc-plugin) to generate our Clojure bindings:
 ```
 mkdir src/
 protoc --clojure_out=src/ addressbook.proto
@@ -122,3 +132,28 @@ user=> (pb->Person (byte-array [10 8 74 97 110 101 32 68 111 101]))
 
 You've now round tripped a Protocol Buffer message from definition, to .clj language bindings, to in-memory
 clj representation to bytes and back to the in-memory form!
+
+# Advanced Topics
+
+This section details how some of the more esoteric aspects of the protobuf ecosystem are supported under Protojure.
+
+### Well-known Types
+
+Google supports a set of standard [well-known](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf) types throughout their
+APIs, and they have been adopted by the broader Protobuf community in a few different ways. As such, Protojure offers support for them too.  [This library](https://github.com/protojure/google.protobuf) packages up the well-known types into Protojure pre-compiled artifacts so that they may be naturally consumed.  This is standard practive
+for most language bindings in the ecosystem.
+
+### Any types
+
+Protobufs support the notion of an [Any](https://developers.google.com/protocol-buffers/docs/proto3#any) type.  This section details how to use the 'Any'
+facilities from within Protojure.
+
+* coming soon *
+
+### Oneof Types
+
+* coming soon *
+
+### Timestamp Types
+
+* coming soon *
