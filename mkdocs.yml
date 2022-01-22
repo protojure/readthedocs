@@ -15,6 +15,8 @@ nav:
 - Introduction: index.md
 - Intallation: install.md
 - Quick Start: quick-start.md
+- Protobufs: protobufs.md
+- GRPC: grpc.md
 - Contribuing: contributing.md
 
 markdown_extensions:
