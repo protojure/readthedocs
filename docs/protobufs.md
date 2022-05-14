@@ -35,7 +35,7 @@ message AddressBook {
 
 ```
 
-Most of the protobuf ecosystem works by compiling the languauge neutral .proto definition into some language specific bindings, and
+Most of the protobuf ecosystem works by compiling the language neutral .proto definition into some language specific bindings, and
 protojure is no different.  In the case of Protojure, 'Language specific' translates to Clojure maps and records.  As such, you will
 find a map-oriented approach to working with protocol buffers with Protojure.
 
