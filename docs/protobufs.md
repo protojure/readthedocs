@@ -140,7 +140,7 @@ This section details how some of the more esoteric aspects of the protobuf ecosy
 ### Well-known Types
 
 Google supports a set of standard [well-known](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf) types throughout their
-APIs, and they have been adopted by the broader Protobuf community in a few different ways. As such, Protojure offers support for them too.  [This library](https://github.com/protojure/google.protobuf) packages up the well-known types into Protojure pre-compiled artifacts so that they may be naturally consumed.  This is standard practive
+APIs, and they have been adopted by the broader Protobuf community in a few different ways. As such, Protojure offers support for them too.  [This library](https://github.com/protojure/google.protobuf) packages up the well-known types into Protojure pre-compiled artifacts so that they may be naturally consumed.  This is standard practice
 for most language bindings in the ecosystem.
 
 ### Any types
