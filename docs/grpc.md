@@ -138,33 +138,47 @@ user=> @(greeter/Hello client {:name "Janet Johnathan Doe"})
 
 ```
 
-If we go back to the source code of the running server (the output of `lein new protojure demo-server` above) and apply the below patch (remove the lines marked
-  with `-` and add the lines marked with `+`):
+Here is a minimal service namespace that wires up gRPC with Pedestal 0.8.x:
 
-```
-diff --git a/src/demo_server/service.clj b/src/demo_server/service.clj
-index 51c63f0..b480bec 100644
---- a/src/demo_server/service.clj
-+++ b/src/demo_server/service.clj
-@@ -8,7 +8,9 @@
-             [protojure.pedestal.core :as protojure.pedestal]
-             [protojure.pedestal.routes :as proutes]
-             [com.example.addressbook.Greeter.server :as greeter]
--            [com.example.addressbook :as addressbook]))
-+            [com.example.addressbook :as addressbook]
-+            [io.pedestal.log :as log]))
+```clojure
+(ns demo-server.service
+  (:require [io.pedestal.connector :as conn]
+            [io.pedestal.service.interceptors :as svc.interceptors]
+            [io.pedestal.log :as log]
+            [protojure.pedestal.core :as protojure.pedestal]
+            [protojure.pedestal.routes :as proutes]
+            [com.example.addressbook.Greeter.server :as greeter]
+            [com.example.addressbook :as addressbook]))
 
- (defn about-page
-   [request]
-@@ -40,6 +42,7 @@
-   greeter/Service
-   (Hello
-     [this {{:keys [name]} :grpc-params :as request}]
-+    (log/info "Processing com.example.addressbook.Greeter/Hello invocation with request: " name)
-     {:status 200
-      :body {:message (str "Hello, " name)}}))
+;; Implement the gRPC service protocol
+(deftype Greeter []
+  greeter/Service
+  (Hello
+    [this {{:keys [name]} :grpc-params :as request}]
+    (log/info "Processing Greeter/Hello for:" name)
+    {:status 200
+     :body {:message (str "Hello, " name)}}))
 
+;; Common interceptors added to every route
+(def common-interceptors [svc.interceptors/html-body])
 
+;; Build the route table from gRPC service metadata
+(def routes
+  (into #{}
+    (proutes/->tablesyntax {:rpc-metadata   greeter/rpc-metadata
+                            :interceptors   common-interceptors
+                            :callback-context (Greeter.)})))
+
+;; Start the Pedestal 0.8.x connector
+(defn start-server [port]
+  (let [connector-map (-> (conn/default-connector-map port)
+                          (conn/with-interceptors [svc.interceptors/not-found])
+                          (conn/with-routes routes))]
+    (conn/start! (protojure.pedestal/create-connector connector-map))))
+
+;; Stop the connector
+(defn stop-server [connector]
+  (conn/stop! connector))
 ```
 
 Stop the running demo-server process and restart with `lein run`.
@@ -249,13 +263,21 @@ service Greeter {
      :body {:message (str "Hello, " name)}}))
 ```
 
-Include the below in the interceptors passed to
-the pedestal routes key:
+Use `proutes/->tablesyntax` to generate the Pedestal route table from gRPC service metadata,
+then pass it to `conn/with-routes` when building the connector:
 
-```
-(proutes/->tablesyntax {:rpc-metadata greeter/rpc-metadata
-                        :interceptors common-interceptors
-                        :callback-context (Greeter.)})
+```clojure
+(def routes
+  (into #{}
+    (proutes/->tablesyntax {:rpc-metadata     greeter/rpc-metadata
+                            :interceptors     common-interceptors
+                            :callback-context (Greeter.)})))
+
+(defn start-server [port]
+  (let [connector-map (-> (conn/default-connector-map port)
+                          (conn/with-interceptors [svc.interceptors/not-found])
+                          (conn/with-routes routes))]
+    (conn/start! (protojure.pedestal/create-connector connector-map))))
 ```
 
 Refer to [src/hello](https://github.com/protojure/protoc-plugin/tree/master/examples/hello/src/hello) in the hello example

@@ -1,6 +1,6 @@
 ## Clojure Docs
 
-* [Protojure lib cljdoc](https://cljdoc.org/d/protojure/protojure)
+* [Protojure lib cljdoc](https://cljdoc.org/d/io.github.protojure/grpc-server)
 
 ## Contributing
 

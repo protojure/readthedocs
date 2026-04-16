@@ -17,6 +17,7 @@ nav:
 - Quick Start: quick-start.md
 - Protobufs: protobufs.md
 - GRPC: grpc.md
+- Migration Guide: migration-guide.md
 - Contribuing: contributing.md
 
 markdown_extensions:
